@@ -1,0 +1,176 @@
+<!--
+  Wrapper component for concepts
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../gid-api/gid-api.html">
+<!--
+`gid-auth`
+
+A data component for authorization
+
+    <gid-auth username = 'abc@xyz.com' password='xxxx'>
+    </gid-auth>
+    
+
+API endpoint:
+
+    POST /api/api-token
+
+Input:
+ - Username
+ - Password
+
+Sample Input: (as JSON payload)
+
+	    {
+	      
+	    }
+	
+Output:
+
+@demo demo/index.html
+-->
+<dom-module id="gid-auth">
+  <template>
+          <!-- fetch entity path  -->
+        	<gid-api entity = '{{apiEntity}}' path='{{path}}'></gid-api>
+        <!--  fetch entity path -->
+        
+         <!-- fetch concept details -->	
+			<gid-api auto=false
+				method="PUT" api-url={{authUrl}} response='{{authResponse}}' request-body={{authReqBody}}
+				api-params={{authParams}} api-token = {{authToken}} api-timeout={{authTimeout}}> </gid-api>			
+	    <!-- fetch concept details -->
+
+  </template>
+  <script>
+    (function() {
+     'use strict';
+      Polymer({
+        is:'gid-auth',
+        properties:{
+	        	apiUrl:{
+	            	type: String,
+	    	        notify: true,
+	    	        value: ''
+	    	 	},
+        	   authUrl:{
+                	type: String,
+        	        notify: true
+        	 	},
+        	 	authTimeout : {
+            		type: Number,
+        	        notify: true,
+        	        value : 0
+        	    },
+        	    authResponse : {
+	     	  		type : Object,
+	     	  		notify : true,
+	     	  		observer : 'authResponseChanged'
+        	  	},
+        	  	authParams : {
+	     	   		type: String,
+	     	   		notify : true
+     	   	    },
+	     	   	authReqBody : {
+	     	   		type: Object,
+	     	   		notify : true
+	 	   	    },
+	 	   		authToken : {
+	     	   		type: String,
+	     	   		notify : true
+     	   	    },
+     	   	    response: {
+     	          type: Array,
+     	          value: [],
+     	          notify: true
+     	        },
+     	       	username: {
+     	        	type: String,
+     	        	value : '',
+     	        	notify :  true
+     	        },
+     	       	password: {
+    	        	type: String,
+    	        	value : '',
+    	        	notify :  true
+    	        },
+    	        reqBodyArr: {
+ 	           	   type: Array,
+ 	           	   notify: true,
+ 	           	   value: ["username", "password"]
+                 },
+                 reqBodyObj: {
+             	   type: Array,
+ 	           	   notify: true,
+ 	           	   value: {}
+                },
+                path: {
+               	   type: String,
+                   notify: true,
+                   value: '',
+                   observer: 'pathReceived'
+                },
+                apiEntity: {
+               	   type: String,
+                   notify: true
+                },
+                authorize: {
+            	   type: Boolean,
+            	   notify: true,
+            	   value: false,
+            	   observer: 'authorize'
+                }
+               
+        },
+        authResponseChanged : function(newvalue, oldvalue){
+          this.response = [];
+		  this.apiEntity = '';
+          this.path = '';
+	          if(newvalue != null){
+		             this.async(function() {
+		         		this.response =  this.response.concat(newvalue);
+		   		 	          }, 500);
+	          }
+         	
+         },
+         authorize: function () {
+        	 if (this.authorize) {
+//         	 	if (!this.apiUrl) {
+// 	      			//this.authUrl = this.importPath + 'assets/json/curate-concept.json';
+// 	                //this.authTimeout =  this.authTimeout - 1;
+//       			}
+//         		else {
+         			this.apiEntity = 'AUTH';
+//          		}
+         	}
+				
+         },
+         pathReceived: function(){
+         	if(this.path){
+         		var res = this.path.split(/{([^}]+)}/);
+         		for (var i in res) {
+         			if(!res[i].startsWith("/")){
+         					if(this[res[i]]){
+         						res[i] = this[res[i]];
+         					}
+         			}
+         		}
+       			this.authUrl = this.apiUrl + res.join("");
+                for (var i in this.reqBodyArr){
+                	if(this[this.reqBodyArr[i]].length){
+                		this.reqBodyObj[this.reqBodyArr[i]]= this[this.reqBodyArr[i]];
+                	}
+                }
+                if(this.apiToken){
+       				this.authToken =  this.apiToken;
+       			}
+       			this.authReqBody = this.reqBodyObj;
+       			this.authTimeout =  this.authTimeout - 1;
+         		
+         	}
+         }
+      });
+    })();
+  </script>
+</dom-module>

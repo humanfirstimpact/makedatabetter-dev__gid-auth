@@ -1,0 +1,46 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+
+    <title>gid auth</title>
+
+    <link rel="import" href="../gid-auth.html">
+    <style>
+	  	table, th, td {
+	    border: 1px solid grey;
+	    border-collapse: collapse;
+		}
+		td {
+		    text-align: center;
+		}
+  	</style>
+</head>
+<body unresolved>
+<h1>Authorize</h1>
+
+<div class="horizontal-section-container">
+    <template is="dom-bind" id="app">
+    
+        <gid-auth api-url='http://192.168.33.55:45450' username='shreyab@globalids.com' password='nrift1234'
+        authorize = true
+        response='{{response}}'>
+        </gid-auth>
+    </template>
+</div>
+
+<script>
+    var app = document.querySelector('#app');
+
+
+</script>
+</body>
+</html>
