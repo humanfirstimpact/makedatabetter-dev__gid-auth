@@ -37,9 +37,10 @@ Output:
         <!--  fetch entity path -->
         
          <!-- fetch concept details -->	
-			<gid-api auto=false
-				method="PUT" api-url={{authUrl}} response='{{authResponse}}' request-body={{authReqBody}}
-				api-params={{authParams}} api-token = {{authToken}} api-timeout={{authTimeout}}> </gid-api>			
+			<gid-api auto=false 
+				method="POST" api-content-type = "application/x-www-form-urlencoded"
+				api-url={{authUrl}} response={{authResponse}} request-body={{authReqBody}}
+				api-params={{authParams}} api-timeout={{authTimeout}}> </gid-api>			
 	    <!-- fetch concept details -->
 
   </template>
@@ -54,7 +55,7 @@ Output:
 	    	        notify: true,
 	    	        value: ''
 	    	 	},
-        	   authUrl:{
+        	    authUrl:{
                 	type: String,
         	        notify: true
         	 	},
@@ -76,10 +77,6 @@ Output:
 	     	   		type: Object,
 	     	   		notify : true
 	 	   	    },
-	 	   		authToken : {
-	     	   		type: String,
-	     	   		notify : true
-     	   	    },
      	   	    response: {
      	          type: Array,
      	          value: [],
@@ -95,16 +92,6 @@ Output:
     	        	value : '',
     	        	notify :  true
     	        },
-    	        reqBodyArr: {
- 	           	   type: Array,
- 	           	   notify: true,
- 	           	   value: ["username", "password"]
-                 },
-                 reqBodyObj: {
-             	   type: Array,
- 	           	   notify: true,
- 	           	   value: {}
-                },
                 path: {
                	   type: String,
                    notify: true,
@@ -115,11 +102,11 @@ Output:
                	   type: String,
                    notify: true
                 },
-                authorize: {
+                signin: {
             	   type: Boolean,
             	   notify: true,
             	   value: false,
-            	   observer: 'authorize'
+            	   observer: 'signInUser'
                 }
                
         },
@@ -134,10 +121,10 @@ Output:
 	          }
          	
          },
-         authorize: function () {
-        	 if (this.authorize) {
+         signInUser: function () {
+        	 if (this.signin) {
 //         	 	if (!this.apiUrl) {
-// 	      			//this.authUrl = this.importPath + 'assets/json/curate-concept.json';
+// 	      			//this.authUrl = this.importPath + 'assets/json/auth.json';
 // 	                //this.authTimeout =  this.authTimeout - 1;
 //       			}
 //         		else {
@@ -156,16 +143,8 @@ Output:
          					}
          			}
          		}
-       			this.authUrl = this.apiUrl + res.join("");
-                for (var i in this.reqBodyArr){
-                	if(this[this.reqBodyArr[i]].length){
-                		this.reqBodyObj[this.reqBodyArr[i]]= this[this.reqBodyArr[i]];
-                	}
-                }
-                if(this.apiToken){
-       				this.authToken =  this.apiToken;
-       			}
-       			this.authReqBody = this.reqBodyObj;
+         		this.authUrl = this.apiUrl + res.join("");
+       			this.authReqBody = {"UserName" : this.username, "Password" : this.password};
        			this.authTimeout =  this.authTimeout - 1;
          		
          	}
