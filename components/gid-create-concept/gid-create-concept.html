@@ -1,0 +1,224 @@
+<!--
+  Wrapper component for concepts
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../gid-api/gid-api.html">
+<!--
+`gid-create-concept`
+
+
+A data component to create concept
+
+    <gid-create-concept user='1' concept='{{concept}}'>
+    </gid-create-concept>
+        
+ 
+The fields 'concept', 'user' and 'create' are  mandatory.
+
+If 'apiUrl' is not provided, then the component would fetch sample data from mock json.
+
+
+API endpoint:
+
+    POST /concepts
+
+Input:
+
+- Label of the concept
+- List of applications
+- LOB Id
+- User Id
+- List of impact Area
+
+Sample Input: (as JSON payload)
+
+	    {
+		"concept": {
+		  "label" : "Domain Name",
+		  "applications":["app-id-1","app-id-2"],
+		  "lob" : "lob-id",
+		  "impactArea" : [
+				{ 
+					"id": "impact-area-id-1",
+					"label": "impact-area-label-1",
+				},
+				{ 
+					"id": "impact-area-id-2",
+					"label": "impact-area-label-3",
+				}
+			],
+		  "owner" : "user-id"
+		}	        
+	    }
+	
+Output:
+
+      {
+        "concept" : {"id":"concept-id"}
+      }
+      
+
+@demo demo/index.html
+-->
+<dom-module id="gid-create-concept">
+  <template>
+          <!-- fetch entity path  -->
+        	<gid-api entity = '{{apiEntity}}' path='{{path}}'></gid-api>
+        <!--  fetch entity path -->
+        
+         <!-- fetch concept details -->	
+			<gid-api auto=false
+				method="POST" api-url={{createConceptUrl}} response='{{createConceptResponse}}'
+				api-timeout={{createConceptTimeout}} api-params={{createConceptParams}} request-body={{createConceptRequestBody}}>
+		    </gid-api>			
+	    <!-- fetch concept details -->
+
+  </template>
+  <script>
+    (function() {
+     'use strict';
+      Polymer({
+        is:'gid-create-concept',
+        properties:{
+	        	apiUrl:{
+	            	type: String,
+	    	        notify: true,
+	    	        value: ''
+	    	 	},
+	    	 	createConceptUrl:{
+                	type: String,
+        	        notify: true
+        	 	},
+        	 	createConceptTimeout : {
+            		type: Number,
+        	        notify: true,
+        	        value : 0
+        	    },
+        	    createConceptResponse : {
+	     	  		type : Object,
+	     	  		notify : true,
+	     	  		observer : 'createConceptResponseChanged'
+        	  	},
+        	  	createConceptParams : {
+	     	   		type: String,
+	     	   		notify : true
+     	   	    },
+	     	   	createConceptRequestBody : {
+	     	   		type: Object,
+	     	   		notify : true
+	 	   	    },
+	 	   	    response: {
+     	          type: Object,
+     	          value: {},
+     	          notify: true
+     	        },
+     	       	paramsArr: {
+	           	   type: Array,
+	           	   notify: true,
+	           	   value: ["label", "applications", "lob", "impactArea", "owner"]
+                },
+                paramsObj: {
+            	   type: Array,
+	           	   notify: true,
+	           	   value: {}
+                },
+     	      	label: {
+	           	   type: String,
+	           	   notify: true,
+	           	   value: ''
+              	},
+              	applications: {
+	           	   type: Array,
+	           	   notify: true,
+	           	   value: []
+              	},
+              	lob: {
+	           	   type: String,
+	           	   notify: true,
+	           	   value: ''
+              	},
+              	impactArea: {
+	           	   type: Array,
+	           	   notify: true,
+	           	   value: []
+              	},
+              	owner: {
+	           	   type: String,
+	           	   notify: true,
+	           	   value: ''
+              	},
+              	user: {
+     	        	type: String,
+     	        	value : '',
+     	        	notify :  true
+     	        },
+                path: {
+               	   type: String,
+                   notify: true,
+                   value: '',
+                   observer: 'pathReceived'
+                },
+                apiEntity: {
+               	   type: String,
+                   notify: true,
+                   private: true
+                },
+                create: {
+                	type: Boolean,
+             		notify: true,
+             		value: false,
+             		observer: 'createConcept'
+                }
+               
+        },
+        createConceptResponseChanged : function(newvalue, oldvalue){
+          this.response = [];
+	          if(newvalue != null){
+		             this.async(function() {
+		         		this.response =  newvalue.concept;
+		         		console.log(this.response);
+		   		 	          }, 500);
+	          }
+         	
+         },
+         createConcept: function () {
+        	 if (this.create) {
+        		this.owner =  this.user;
+        	 	if (!this.apiUrl) {
+// 	      			this.createConceptUrl = this.importPath + 'assets/json/' + this.entity.toLowerCase() + '.json';
+// 	                this.createConceptTimeout =  this.createConceptTimeout - 1;
+      			}
+        		else {
+         			this.apiEntity = 'CREATE-CONCEPT';
+         		}
+         	}
+				
+         },
+         pathReceived: function(){
+         	if(this.path){
+         		var res = this.path.split(/{([^}]+)}/);
+         		var obj = {};
+         		for (var i in res) {
+         			if(!res[i].startsWith("/")){
+         					if(this[res[i]]){
+         						res[i] = this[res[i]];
+         					}
+         			}
+         		}
+       			this.createConceptUrl = this.apiUrl + res.join("");
+                for (var i in this.paramsArr){
+                	if(this[this.paramsArr[i]]){
+                		obj[this.paramsArr[i]]= this[this.paramsArr[i]];;
+                		}
+                	
+                }
+                this.paramsObj["concept"] =  obj;
+       			this.createConceptRequestBody = this.paramsObj;
+       			this.createConceptTimeout =  this.createConceptTimeout - 1;
+         		
+         	}
+         }
+      });
+    })();
+  </script>
+</dom-module>
