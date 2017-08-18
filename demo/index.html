@@ -30,10 +30,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <div class="horizontal-section-container">
     <template is="dom-bind" id="app">
     
-        <gid-auth api-url='http://192.168.44.106:45450' username='palash.bhowmick@globalids.com' password='developer'
-        signin = true
-        response='{{response}}'>
+        <gid-auth api-url='http://192.168.44.106:45450'
+        username='shreyab@globalids.com' password='nrift1234'
+        signin = true response='{{response}}'>
         </gid-auth>
+        <template is="dom-if" if="[[response]]">
+            <div class="horizontal-section">
+                <p>Token : &nbsp;{{response.token}}</p>
+                <p>Url : &nbsp;{{response.url}}</p>
+                <h3>User Details</h3>
+                <p>First Name : &nbsp;{{response.user.firstName}}</p>
+                <p>Middle Name : &nbsp;{{response.user.middleName}}</p>
+                <p>Last Name : &nbsp;{{response.user.lastName}}</p>
+                <p>Mail : &nbsp;{{response.user.mail}}</p>
+            </div>
+        </template>
     </template>
 </div>
 

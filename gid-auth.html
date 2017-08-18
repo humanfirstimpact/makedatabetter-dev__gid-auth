@@ -8,13 +8,13 @@
 
 A data component for authorization
 
-    <gid-auth username = 'abc@xyz.com' password='xxxx'>
+    <gid-auth username = 'abc@xyz.com' password='xxxxxxxx'>
     </gid-auth>
     
 
 API endpoint:
 
-    POST /api/api-token
+    POST /api/security/api-token
 
 Input:
  - Username
@@ -23,10 +23,22 @@ Input:
 Sample Input: (as JSON payload)
 
 	    {
-	      
-	    }
+			"UserName": "abc@xyz.com",
+			"Password": "xxxxxxxx"
+		}
 	
 Output:
+	
+		{
+		  "token": "MTAxMjMzMTU1MTUwMjk3MjEzMzYxMDA5MDFY",
+		  "user": {
+		    "middleName": "",
+		    "lastName": "Bhowmick",
+		    "mail": "palash.bhowmick@globalids.com",
+		    "firstName": "Palash"
+		  },
+  		  "url": "http://192.168.44.106:45450/api/"
+		}
 
 @demo demo/index.html
 -->
