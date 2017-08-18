@@ -30,11 +30,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <div class="horizontal-section-container">
     <template is="dom-bind" id="app">
     
-        <gid-auth api-url='http://192.168.44.106:45450'
+        <gid-auth api-url='http://192.168.44.106:45450/test'
         username='shreyab@globalids.com' password='nrift1234'
         signin = true response='{{response}}'>
         </gid-auth>
-        <template is="dom-if" if="[[response]]">
+        <template is="dom-if" if="[[response.token]]">
             <div class="horizontal-section">
                 <p>Token : &nbsp;{{response.token}}</p>
                 <p>Url : &nbsp;{{response.url}}</p>
@@ -44,6 +44,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <p>Last Name : &nbsp;{{response.user.lastName}}</p>
                 <p>Mail : &nbsp;{{response.user.mail}}</p>
             </div>
+        </template>
+        <template is="dom-if" if="[[response.errorCode]]">
+        	<p>{{response.errorDescription}}</p>
         </template>
     </template>
 </div>

@@ -8,13 +8,15 @@
 
 A data component for authorization
 
-    <gid-auth username = 'abc@xyz.com' password='xxxxxxxx'>
+    <gid-auth api-url='http://192.168.44.106:45450/test'
+    username = 'abc@xyz.com' password='xxxxxxxx'
+    signin = true response='{{response}}'>
     </gid-auth>
     
 
 API endpoint:
 
-    POST /api/security/api-token
+    POST /api/security/api-token-v1
 
 Input:
  - Username
@@ -91,7 +93,7 @@ Output:
 	 	   	    },
      	   	    response: {
      	          type: Array,
-     	          value: [],
+     	          value: {},
      	          notify: true
      	        },
      	       	username: {
@@ -123,12 +125,17 @@ Output:
                
         },
         authResponseChanged : function(newvalue, oldvalue){
-          this.response = [];
+          var tempObj = {};
+          this.response = {};
 		  this.apiEntity = '';
           this.path = '';
 	          if(newvalue != null){
 		             this.async(function() {
-		         		this.response =  this.response.concat(newvalue);
+		         		this.tempObj =  newvalue;
+		         		if(newvalue.hasOwnProperty("url")){
+		         			this.tempObj["url"] = newvalue.url + 'v1';
+		         		}
+		         		this.response = this.tempObj;
 		   		 	          }, 500);
 	          }
          	
@@ -155,7 +162,11 @@ Output:
          					}
          			}
          		}
-         		this.authUrl = this.apiUrl + res.join("");
+         		if(this.apiUrl){
+         			var apiUrlParser = document.createElement('a');
+             		apiUrlParser.href = this.apiUrl;
+             		this.authUrl = apiUrlParser.origin + res.join("");
+         		}
        			this.authReqBody = {"UserName" : this.username, "Password" : this.password};
        			this.authTimeout =  this.authTimeout - 1;
          		
