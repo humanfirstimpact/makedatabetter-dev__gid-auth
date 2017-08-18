@@ -17,11 +17,11 @@
     "gid-api": "makedatabetter-dev/gid-api"
   },
   "homepage": "https://github.com/makedatabetter-dev/gid-auth",
-  "_release": "e3680b1109",
+  "_release": "47dda4eb99",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "e3680b110903d79ecc823ffb1030b067fc7a99d8"
+    "commit": "47dda4eb9972b3f7ab2e732bbcda27cfd1f45f7b"
   },
   "_source": "https://github.com/makedatabetter-dev/gid-auth.git",
   "_target": "*",
