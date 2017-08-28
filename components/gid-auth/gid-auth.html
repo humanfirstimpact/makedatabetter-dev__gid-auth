@@ -13,7 +13,10 @@ A data component for authorization
     signin = true response='{{response}}'>
     </gid-auth>
     
+The property 'signin' needs to be set to 'true' for authorization
 
+The property 'response' returns the response against the rest call
+	
 API endpoint:
 
     POST /api/security/api-token-v1
@@ -47,13 +50,14 @@ Output:
 <dom-module id="gid-auth">
   <template>
           <!-- fetch entity path  -->
-        	<gid-api entity = '{{apiEntity}}' path='{{path}}'></gid-api>
+        	<gid-api entity = '{{apiEntity}}' path-key= '{{pathKey}}' path='{{path}}'></gid-api>
         <!--  fetch entity path -->
         
          <!-- fetch concept details -->	
 			<gid-api auto=false 
 				method="POST" api-content-type = "application/x-www-form-urlencoded"
-				api-url={{authUrl}} response={{authResponse}} request-body={{authReqBody}}
+				api-url={{authUrl}} response={{authResponse}}
+				error= '{{authError}}' request-body={{authReqBody}}
 				api-params={{authParams}} api-timeout={{authTimeout}}> </gid-api>			
 	    <!-- fetch concept details -->
 
@@ -81,7 +85,12 @@ Output:
         	    authResponse : {
 	     	  		type : Object,
 	     	  		notify : true,
-	     	  		observer : 'authResponseChanged'
+	     	  		observer : 'authResponseReceived'
+        	  	},
+        	  	authError : {
+	     	  		type : Object,
+	     	  		notify : true,
+	     	  		observer : 'authErrorReceived'
         	  	},
         	  	authParams : {
 	     	   		type: String,
@@ -106,6 +115,11 @@ Output:
     	        	value : '',
     	        	notify :  true
     	        },
+    	        pathKey: {
+                	   type: String,
+                    notify: true,
+                    value: ''
+                },
                 path: {
                	   type: String,
                    notify: true,
@@ -124,11 +138,9 @@ Output:
                 }
                
         },
-        authResponseChanged : function(newvalue, oldvalue){
-          var tempObj = {};
-          this.response = {};
-		  this.apiEntity = '';
-          this.path = '';
+        authResponseReceived : function(newvalue, oldvalue){
+             var tempObj = {};
+              this.reset();
 	          if(newvalue != null){
 		             this.async(function() {
 		         		this.tempObj =  newvalue;
@@ -140,6 +152,19 @@ Output:
 	          }
          	
          },
+         authErrorReceived : function(newvalue, oldvalue){
+             this.reset();
+             if(newvalue != null){
+		             this.async(function() {
+		         		this.response =  newvalue.response;
+		   		 	          }, 500);
+	          }
+         },
+         reset: function(){
+        	 this.response = {};
+   		     this.apiEntity = '';
+             this.path = '';
+         },
          signInUser: function () {
         	 if (this.signin) {
 //         	 	if (!this.apiUrl) {
@@ -147,6 +172,7 @@ Output:
 // 	                //this.authTimeout =  this.authTimeout - 1;
 //       			}
 //         		else {
+					this.pathKey =  'default';
          			this.apiEntity = 'AUTH';
 //          		}
          	}
