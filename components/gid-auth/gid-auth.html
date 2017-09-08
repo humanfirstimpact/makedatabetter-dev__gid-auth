@@ -49,16 +49,16 @@ Output:
 -->
 <dom-module id="gid-auth">
   <template>
-          <!-- fetch entity path  -->
-        	<gid-api entity = '{{apiEntity}}' path-key= '{{pathKey}}' path='{{path}}'></gid-api>
+          <!-- fetch entity _path  -->
+        	<gid-api entity = '{{_apiEntity}}' path-key= '{{_pathKey}}' path='{{_path}}'></gid-api>
         <!--  fetch entity path -->
         
          <!-- fetch concept details -->	
 			<gid-api auto=false 
 				method="POST" api-content-type = "application/x-www-form-urlencoded"
-				api-url={{authUrl}} response={{authResponse}}
-				error= '{{authError}}' request-body={{authReqBody}}
-				api-params={{authParams}} api-timeout={{authTimeout}}> </gid-api>			
+				api-url={{_authUrl}} response={{_authResponse}}
+				error= '{{_authError}}' request-body={{_authReqBody}}
+				api-params={{_authParams}} api-timeout={{_authTimeout}}> </gid-api>			
 	    <!-- fetch concept details -->
 
   </template>
@@ -68,79 +68,94 @@ Output:
       Polymer({
         is:'gid-auth',
         properties:{
+        	    /*Base url*/
 	        	apiUrl:{
 	            	type: String,
 	    	        notify: true,
 	    	        value: ''
 	    	 	},
-        	    authUrl:{
+	    	 	/*Url sent to gid-api*/
+        	    _authUrl:{
                 	type: String,
         	        notify: true
         	 	},
-        	 	authTimeout : {
+        	 	/*Timeout sent to gid-api*/
+        	 	_authTimeout : {
             		type: Number,
         	        notify: true,
         	        value : 0
         	    },
-        	    authResponse : {
+        	    /*Response sent to gid-api. This is a private property*/
+        	    _authResponse : {
 	     	  		type : Object,
 	     	  		notify : true,
-	     	  		observer : 'authResponseReceived'
+	     	  		observer : '_authResponseReceived'
         	  	},
-        	  	authError : {
+        	  	/*Error sent to gid-api. This is a private property*/
+        	  	_authError : {
 	     	  		type : Object,
 	     	  		notify : true,
-	     	  		observer : 'authErrorReceived'
+	     	  		observer : '_authErrorReceived'
         	  	},
-        	  	authParams : {
+        	  	/*Params sent to gid-api*/
+        	  	_authParams : {
 	     	   		type: String,
 	     	   		notify : true
      	   	    },
-	     	   	authReqBody : {
+     	   	    /*Request body sent to gid-api*/
+	     	   	_authReqBody : {
 	     	   		type: Object,
 	     	   		notify : true
 	 	   	    },
+	 	   	    /*Object for storing success/error response*/
      	   	    response: {
-     	          type: Array,
+     	          type: Object,
      	          value: {},
      	          notify: true
      	        },
+     	        /*Username parameter*/
      	       	username: {
      	        	type: String,
      	        	value : '',
      	        	notify :  true
      	        },
+     	        /*Password parameter*/
      	       	password: {
     	        	type: String,
     	        	value : '',
     	        	notify :  true
     	        },
-    	        pathKey: {
+    	        /*The api path key*/
+    	        _pathKey: {
                 	   type: String,
                     notify: true,
                     value: ''
                 },
-                path: {
+                /*The api path*/
+                _path: {
                	   type: String,
                    notify: true,
                    value: '',
-                   observer: 'pathReceived'
+                   observer: '_pathReceived'
                 },
-                apiEntity: {
+                /*Api entity sent to gid-api*/
+                _apiEntity: {
                	   type: String,
                    notify: true
                 },
+                /*The property 'signin' needs to be set to 'true' for authorization*/
                 signin: {
             	   type: Boolean,
             	   notify: true,
             	   value: false,
-            	   observer: 'signInUser'
+            	   observer: '_signInUser'
                 }
                
         },
-        authResponseReceived : function(newvalue, oldvalue){
+        /* Success response handler */
+        _authResponseReceived : function(newvalue, oldvalue){
              var tempObj = {};
-              this.reset();
+              this._reset();
 	          if(newvalue != null){
 		             this.async(function() {
 		         		this.tempObj =  newvalue;
@@ -152,35 +167,39 @@ Output:
 	          }
          	
          },
-         authErrorReceived : function(newvalue, oldvalue){
-             this.reset();
+         /* Error response handler */
+         _authErrorReceived : function(newvalue, oldvalue){
+             this._reset();
              if(newvalue != null){
 		             this.async(function() {
 		         		this.response =  newvalue.response;
 		   		 	          }, 500);
 	          }
          },
-         reset: function(){
+         /* Reset method */
+         _reset: function(){
         	 this.response = {};
-   		     this.apiEntity = '';
-             this.path = '';
+   		     this._apiEntity = '';
+             this._path = '';
          },
-         signInUser: function () {
+         /* Observer of 'signIn' property */ 
+         _signInUser: function () {
         	 if (this.signin) {
 //         	 	if (!this.apiUrl) {
-// 	      			//this.authUrl = this.importPath + 'assets/json/auth.json';
-// 	                //this.authTimeout =  this.authTimeout - 1;
+// 	      			//this._authUrl = this.importPath + 'assets/json/auth.json';
+// 	                //this._authTimeout =  this._authTimeout - 1;
 //       			}
 //         		else {
-					this.pathKey =  'default';
-         			this.apiEntity = 'AUTH';
+					this._pathKey =  'default';
+         			this._apiEntity = 'AUTH';
 //          		}
          	}
 				
          },
-         pathReceived: function(){
-         	if(this.path){
-         		var res = this.path.split(/{([^}]+)}/);
+         /* Observer for api path */
+         _pathReceived: function(){
+         	if(this._path){
+         		var res = this._path.split(/{([^}]+)}/);
          		for (var i in res) {
          			if(!res[i].startsWith("/")){
          					if(this[res[i]]){
@@ -191,10 +210,10 @@ Output:
          		if(this.apiUrl){
          			var apiUrlParser = document.createElement('a');
              		apiUrlParser.href = this.apiUrl;
-             		this.authUrl = apiUrlParser.origin + res.join("");
+             		this._authUrl = apiUrlParser.origin + res.join("");
          		}
-       			this.authReqBody = {"UserName" : this.username, "Password" : this.password};
-       			this.authTimeout =  this.authTimeout - 1;
+       			this._authReqBody = {"UserName" : this.username, "Password" : this.password};
+       			this._authTimeout =  this._authTimeout - 1;
          		
          	}
          }

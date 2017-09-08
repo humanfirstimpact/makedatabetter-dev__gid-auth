@@ -7,7 +7,8 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.6.0",
     "iron-ajax": "PolymerElements/iron-ajax#^1.4.4",
-    "polymer-global-variables": "1.1.0"
+    "polymer-global-variables": "1.1.0",
+    "lodash": "4.17.4"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
@@ -17,11 +18,11 @@
     "gid-api": "makedatabetter-dev/gid-api"
   },
   "homepage": "https://github.com/makedatabetter-dev/gid-auth",
-  "_release": "55ab2dd40d",
+  "_release": "b09f580a0c",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "55ab2dd40d228e3c5c6bdd9ff922158913280aec"
+    "commit": "b09f580a0c10f45919118a1d6ccac0b3f67f9bee"
   },
   "_source": "https://github.com/makedatabetter-dev/gid-auth.git",
   "_target": "*",
